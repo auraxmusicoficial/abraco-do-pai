@@ -60,7 +60,7 @@ def luz(saida):
         a = int(150 * (i / 40) ** 2)
         d.rectangle((i * 12, i * 20, W - i * 12, H - i * 20), outline=(0, 0, 0, max(0, 150 - a)), width=14)
     g = Image.new("RGBA", (W, H), (0, 0, 0, 0)); dg = ImageDraw.Draw(g)
-    dg.ellipse((-300, -500, 900, 700), fill=(255, 200, 120, 70))        # luz vinda do alto
+    dg.ellipse((-300, -500, 900, 700), fill=(255, 200, 120, 45))        # luz vinda do alto
     dg.rectangle((0, 1000, W, H), fill=(0, 0, 0, 90))                    # base mais escura p/ legenda
     g = g.filter(ImageFilter.GaussianBlur(160))
     img = Image.alpha_composite(img.filter(ImageFilter.GaussianBlur(30)), g)

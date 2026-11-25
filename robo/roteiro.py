@@ -38,7 +38,7 @@ def criar(periodo="manha", tema=None, palavras=(165, 185)):
 Escreva o texto FALADO com {palavras[0]} a {palavras[1]} palavras (o vídeo tem ~65 s com voz lenta).
 Responda só em JSON:
 {{"titulo": "título curto e emocional, 2 a 5 palavras, como 'Jesus te Cura Agora', 'Deus Manda te Dizer Hoje', '{saudacao.title()} Deus'",
- "versiculo_ref": "ex.: Salmos 23:1",
+ "versiculo_ref": "SÓ com números, ex.: Salmos 23:1 ou Filipenses 4:7 (este aparece escrito na tela)",
  "frase_tela": "a ideia do versículo em até 12 palavras, com suas palavras",
  "texto": "texto falado",
  "descricao": "2 linhas para a descrição do YouTube + pedido de nome nos comentários",
