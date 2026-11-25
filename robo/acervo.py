@@ -13,11 +13,19 @@ CATEGORIAS = {
                  "Sermon_on_the_Mount_in_art", "Good_Shepherd_in_art", "Christ_blessing_in_art",
                  "Paintings_of_the_Resurrection_of_Jesus", "Jesus_walking_on_water_in_art", "Christ_Pantocrator_icons"],
     "paisagens": ["Quality_images_of_sunsets", "Quality_images_of_sunrises", "Quality_images_of_clouds",
-                  "Featured_pictures_of_sunsets", "Quality_images_of_seascapes", "Crepuscular_rays",
+                  "Featured_pictures_of_sunsets", "Quality_images_of_seascapes", "Sunbeams",
                   "Featured_pictures_of_clouds", "Quality_images_of_lakes"],
 }
 LIVRE = ("public domain", "pd-", "cc0", "cc-zero", "pd-old", "pd-art")
 MAX_POR_TIPO = 60
+# o nome do arquivo precisa ter uma destas palavras (evita retratos, torres, barcos, gaiolas etc.)
+CHAVES = {"pinturas": ("christ", "jesus", "cristo", "prodigal", "christus", "христос", "shepherd", "pastor", "gethsemane", "sermon",
+                       "resurrection", "pantocrator", "savior", "saviour", "lord", "messiah"),
+          "paisagens": ("sky", "cloud", "sunset", "sunrise", "sea", "ocean", "beach", "dawn", "dusk", "horizon",
+                        "lake", "mountain", "field", "meadow", "himmel", "wolken", "sonnenuntergang", "light_rays",
+                        "sunbeam", "sunrays", "golden_hour")}
+PROIBIDO = ("portrait", "self", "bildnis", "female", "woman", "power", "tower", "pylon", "boat", "ship", "cage", "_car_",
+            "train", "building", "city", "street", "people", "crowd", "flag", "dpla", "wise_men", "doctors", "temple")
 
 
 def api(**q):
@@ -61,6 +69,9 @@ def main():
                     if ii.get("width", 0) < 1000 or ii.get("height", 0) < 900:
                         continue
                     nome = "".join(c if c.isalnum() else "_" for c in p["title"][5:])[:80] + ".jpg"
+                    low = p["title"].lower().replace(" ", "_")
+                    if not any(k in low for k in CHAVES[tipo]) or any(k in low for k in PROIBIDO):
+                        continue
                     destino = pasta / nome
                     if destino.exists():
                         continue
