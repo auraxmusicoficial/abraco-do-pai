@@ -26,6 +26,8 @@ jobs:
         env:
           SEGREDOS: ${{ secrets.ABRACO_SECRETS }}
           MODO: ${{ github.event.inputs.modo }}
+          BUFFER_KEY: ${{ secrets.BUFFER_KEY }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           eval "$(python3 -c "import json,os,shlex;d=json.loads(os.environ['SEGREDOS']);print('\n'.join(f'export {k}={shlex.quote(str(v))}' for k,v in d.items()))")"
           cd robo && python3 main.py $MODO

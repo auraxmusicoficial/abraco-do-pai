@@ -56,8 +56,18 @@ def um_short(periodo, data, publicar=True):
     from youtube import enviar
     from datetime import timezone
     vid = enviar(video, titulo, desc, tags, quando.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    redes_ids = {}
+    if os.environ.get("BUFFER_KEY"):
+        try:
+            import redes
+            url = redes.hospedar(video, data, f"{periodo}.mp4")
+            legenda = (f"{r['titulo']} 🙏\n\n{r.get('descricao', '')}\n\n🙏 Escreva nos comentários o nome de quem você quer "
+                       f"abençoar.\n📖 {r.get('versiculo_ref', '')}\n\n{tags_hash} {FIXAS}")
+            redes_ids = redes.agendar(url, legenda, r["titulo"] + " 🙏", quando.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"))
+        except Exception as e:
+            print("AVISO Instagram/TikTok falhou (YouTube ok):", e)
     reg = ler(EST / "publicacoes.json", [])
-    reg.append({"data": data, "periodo": periodo, "quando": quando.isoformat(), "video_id": vid, "titulo": titulo,
+    reg.append({"data": data, "periodo": periodo, "quando": quando.isoformat(), "video_id": vid, "titulo": titulo, "buffer": redes_ids,
                 "tema": r["tema"], "versiculo": r.get("versiculo_ref"), "duracao": round(dur(video), 1)})
     salvar(EST / "publicacoes.json", reg)
     return r, vid
@@ -76,8 +86,13 @@ def main():
             feitos.append(f"{HORARIOS[periodo]} {r['titulo']}")
         except Exception:
             erros.append(periodo); traceback.print_exc()
+    if not teste and os.environ.get("BUFFER_KEY"):
+        try:
+            import redes; redes.limpar_releases()
+        except Exception as e:
+            print("limpeza de releases falhou:", e)
     if not teste:
-        msg = "Orações agendadas hoje:\n" + "\n".join(feitos) if feitos else "Nenhuma oração agendada hoje."
+        msg = "Orações agendadas hoje (YouTube, Instagram e TikTok):\n" + "\n".join(feitos) if feitos else "Nenhuma oração agendada hoje."
         if erros:
             msg += f"\n⚠️ Falhou: {', '.join(erros)} (o robô tenta de novo na próxima rodada)"
         avisar(msg)
