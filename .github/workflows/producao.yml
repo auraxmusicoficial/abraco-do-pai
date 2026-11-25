@@ -1,0 +1,45 @@
+name: Produção diária (orações)
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "vazio = produz e agenda; teste = só produz 1 (não publica)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "43 7 * * *"    # 04:43 em Brasília: faz as 3 orações do dia
+    - cron: "13 13 * * *"   # 10:13: nova tentativa do que falhou
+permissions:
+  contents: write
+concurrency:
+  group: producao
+  cancel-in-progress: false
+jobs:
+  produzir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+      - run: pip install -q pillow numpy
+      - name: Produzir
+        env:
+          SEGREDOS: ${{ secrets.ABRACO_SECRETS }}
+          MODO: ${{ github.event.inputs.modo }}
+        run: |
+          eval "$(python3 -c "import json,os,shlex;d=json.loads(os.environ['SEGREDOS']);print('\n'.join(f'export {k}={shlex.quote(str(v))}' for k,v in d.items()))")"
+          cd robo && python3 main.py $MODO
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: videos
+          path: saida/**/short.mp4
+          retention-days: 3
+      - name: Salvar estado
+        if: always()
+        run: |
+          git config user.name "robo-abraco"
+          git config user.email "robo@users.noreply.github.com"
+          git add estado
+          git commit -m "robô: produção do dia" || exit 0
+          git pull --rebase && git push
