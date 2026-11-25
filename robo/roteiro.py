@@ -14,8 +14,8 @@ PERIODO = {"manha": ("nesta manhã", "bom dia"), "tarde": ("nesta tarde", "boa t
 SISTEMA = """Você escreve orações curtas para o canal cristão "Abraço do Pai" (YouTube Shorts), em português do Brasil.
 Quem fala é um NARRADOR que ora pela pessoa (NUNCA fale como se fosse Jesus ou Deus em primeira pessoa).
 Tom: manso, acolhedor, reverente, nunca agressivo, nunca promessas absolutas de cura ou dinheiro, nada de medo ou culpa.
-Estrutura: 1) pergunta gentil de abertura ("Posso orar por você {periodo}?"); 2) convite para escrever nos comentários o
-nome de alguém que a pessoa quer abençoar; 3) a oração em si, falando com Deus ("Senhor...", "Pai..."), citando com
+Estrutura: 1) comece SEMPRE com a saudação certa do horário ("{saudacao}...") e a pergunta gentil "Posso orar por você
+{periodo}?"; 2) convite para escrever nos comentários O SEU NOME e o nome de quem mais a pessoa quer abençoar; 3) a oração em si, falando com Deus ("Senhor...", "Pai..."), citando com
 palavras próprias UM versículo (diga a referência POR EXTENSO para a voz ler bem, ex.: "como diz o Salmo vinte e três", "Filipenses, capítulo quatro, versículo sete"); 4) agradecimento e "Amém"; 5) convite
 curto e carinhoso para curtir e compartilhar com quem precisa. Frases curtas, com pausas (use reticências ... ).
 Sem emojis no texto falado."""
@@ -43,10 +43,18 @@ Responda só em JSON:
  "texto": "texto falado",
  "descricao": "2 linhas para a descrição do YouTube + pedido de nome nos comentários",
  "hashtags": ["#deus", "#jesus", "#oração", "... 5 a 7 no total"]}}"""
-    for tentativa in range(3):
-        r = json.loads(gerar(pedido.replace("{periodo}", quando), sistema=SISTEMA.replace("{periodo}", quando), json_saida=True))
-        if len(r.get("texto", "").split()) >= palavras[0] - 15:
+    sistema = SISTEMA.replace("{periodo}", quando).replace("{saudacao}", saudacao.capitalize())
+    errado = [x for p, (q, sd) in PERIODO.items() if p != periodo for x in (q, sd)]
+    for tentativa in range(4):
+        r = json.loads(gerar(pedido.replace("{periodo}", quando), sistema=sistema, json_saida=True))
+        txt = r.get("texto", "").lower()
+        ok_tam = len(txt.split()) >= palavras[0] - 15
+        ok_hora = saudacao in txt[:120] and not any(e in txt for e in errado)   # nada de "bom dia" numa oração da noite
+        ok_nome = "nome" in txt
+        if ok_tam and ok_hora and ok_nome:
             break
+        pedido += (f"\nATENÇÃO: refaça. Comece com '{saudacao.capitalize()}', não use saudações de outro horário, "
+                   f"peça o nome da pessoa e o de quem ela quer abençoar, e escreva pelo menos {palavras[0]} palavras.")
         pedido += f"\nATENÇÃO: o texto anterior ficou curto demais. Escreva PELO MENOS {palavras[0]} palavras."
     r.update({"tema": tema, "periodo": periodo})
     return r

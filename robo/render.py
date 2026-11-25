@@ -49,7 +49,7 @@ def legenda_ass(r, dur_voz, total, saida):
         L.append(f"Dialogue: 2,{t(t0)},{t(t0 + d - 0.05)},Leg,,0,0,0,,{{\\pos(540,1240)\\fad(250,200)}}{ass_txt(f)}")
         t0 += d
     L.append(f"Dialogue: 2,{t(dur_voz + 0.3)},{t(total)},Fim,,0,0,0,,{{\\pos(540,1240)\\fad(400,500)}}"
-             f"Escreva nos comentários\\No nome de quem você\\Nquer abençoar")
+             f"Escreva nos comentários\\No seu nome e o de quem\\Nvocê quer abençoar")
     Path(saida).write_text("\n".join(L) + "\n", encoding="utf-8")
 
 

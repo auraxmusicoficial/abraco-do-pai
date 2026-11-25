@@ -48,7 +48,7 @@ def um_short(periodo, data, publicar=True):
         quando = datetime.now(BRT) + timedelta(minutes=25)
     tags_hash = " ".join(h if h.startswith("#") else "#" + h for h in r.get("hashtags", []))
     titulo = f"{r['titulo']} 🙏 {FIXAS}"[:100]
-    desc = (f"{r.get('descricao', '')}\n\n🙏 Escreva nos comentários o nome de quem você quer abençoar.\n"
+    desc = (f"{r.get('descricao', '')}\n\n🙏 Escreva nos comentários o seu nome e o nome de quem você quer abençoar.\n"
             f"👍 Curta e compartilhe com quem precisa desta oração.\n🔔 Inscreva-se para orar com a gente todos os dias.\n\n"
             f"📖 {r.get('versiculo_ref', '')}\n\n{tags_hash} {FIXAS}")
     tags = ["oração", "oração do dia", "deus", "jesus", "fé", r["tema"], {"manha": "oração da manhã", "tarde": "oração da tarde",
@@ -61,7 +61,7 @@ def um_short(periodo, data, publicar=True):
         try:
             import redes
             url = redes.hospedar(video, data, f"{periodo}.mp4")
-            legenda = (f"{r['titulo']} 🙏\n\n{r.get('descricao', '')}\n\n🙏 Escreva nos comentários o nome de quem você quer "
+            legenda = (f"{r['titulo']} 🙏\n\n{r.get('descricao', '')}\n\n🙏 Escreva nos comentários o seu nome e o de quem você quer "
                        f"abençoar.\n📖 {r.get('versiculo_ref', '')}\n\n{tags_hash} {FIXAS}")
             redes_ids = redes.agendar(url, legenda, r["titulo"] + " 🙏", quando.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"))
         except Exception as e:
