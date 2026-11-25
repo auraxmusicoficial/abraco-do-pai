@@ -1,0 +1,21 @@
+name: Acervo de imagens (Wikimedia, domínio público)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"   # toda segunda, completa o acervo
+permissions:
+  contents: write
+jobs:
+  acervo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow numpy
+      - run: cd robo && python3 acervo.py
+      - name: Salvar
+        run: |
+          git config user.name "robo-abraco"
+          git config user.email "robo@users.noreply.github.com"
+          git add assets
+          git commit -m "robô: acervo de imagens" || exit 0
+          git pull --rebase && git push
