@@ -56,6 +56,12 @@ def um_short(periodo, data, publicar=True):
     from youtube import enviar
     from datetime import timezone
     vid = enviar(video, titulo, desc, tags, quando.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    try:
+        import playlists
+        if playlists.adicionar(vid, periodo):
+            salvar(EST / "playlist_feitos.json", sorted(set(ler(EST / "playlist_feitos.json", [])) | {vid}))
+    except Exception as e:
+        print("AVISO playlist falhou:", e)
     redes_ids = {}
     if os.environ.get("BUFFER_KEY"):
         try:
