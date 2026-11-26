@@ -8,7 +8,10 @@ on:
         default: ""
   schedule:
     - cron: "43 7 * * *"    # 04:43 em Brasília: faz as 3 orações do dia
+    - cron: "11 8 * * *"    # 05:11: reserva (o GitHub às vezes atrasa/pula o agendamento)
+    - cron: "37 8 * * *"    # 05:37: reserva
     - cron: "13 13 * * *"   # 10:13: nova tentativa do que falhou
+    - cron: "17 17 * * *"   # 14:17: última tentativa (tarde/noite)
 permissions:
   contents: write
 concurrency:
